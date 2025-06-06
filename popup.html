@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Lock Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <div class="header">
+      <div class="icon">🔒</div>
+      <h1>Exam Lock</h1>
+      <p>Academic Integrity Protection</p>
+    </div>
+
+    <div class="settings">
+      <div class="setting-item">
+        <label class="toggle-label">
+          <input type="checkbox" id="enabledToggle" checked>
+          <span class="toggle-slider"></span>
+          Enable Protection
+        </label>
+      </div>
+
+      <div class="setting-item">
+        <label for="modeSelect">Response Mode:</label>
+        <select id="modeSelect">
+          <option value="overlay">Show Blocking Overlay</option>
+          <option value="submit">Auto-Submit Form</option>
+        </select>
+      </div>
+
+      <div class="setting-item">
+        <label for="maxViolations">Max Violations:</label>
+        <input type="number" id="maxViolations" min="1" max="10" value="3">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button id="saveBtn" class="btn btn-primary">Save Settings</button>
+      <button id="clearBtn" class="btn btn-secondary">Clear Violations</button>
+    </div>
+
+    <div class="status" id="statusDiv" style="display: none;"></div>
+
+    <div class="info">
+      <h3>How it works:</h3>
+      <ul>
+        <li>Detects tab switching and minimizing</li>
+        <li>Prevents common cheating shortcuts</li>
+        <li>Works on Google Forms and custom exam pages</li>
+        <li>Logs all violations for review</li>
+      </ul>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
