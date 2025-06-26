@@ -1,408 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Exam Lock Demo - Test Page</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-      overflow: hidden;
-    }
-
-    .header {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: white;
-      padding: 40px;
-      text-align: center;
-    }
-
-    .header h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 10px;
-    }
-
-    .header p {
-      font-size: 1.1rem;
-      opacity: 0.9;
-    }
-
-    .content {
-      padding: 40px;
-    }
-
-    .demo-section {
-      margin-bottom: 40px;
-    }
-
-    .demo-section h2 {
-      color: #1f2937;
-      font-size: 1.5rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .demo-section p {
-      color: #6b7280;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-
-    .status-card {
-      background: #f8fafc;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-    }
-
-    .status-active {
-      border-color: #10b981;
-      background: #ecfdf5;
-    }
-
-    .status-violation {
-      border-color: #ef4444;
-      background: #fef2f2;
-    }
-
-    .test-buttons {
-      display: flex;
-      gap: 15px;
-      flex-wrap: wrap;
-      margin: 20px 0;
-    }
-
-    .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 14px;
-      text-decoration: none;
-      display: inline-block;
-    }
-
-    .btn-primary {
-      background: #3b82f6;
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: #2563eb;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
-    }
-
-    .btn-secondary {
-      background: #f1f5f9;
-      color: #475569;
-      border: 2px solid #e2e8f0;
-    }
-
-    .btn-secondary:hover {
-      background: #e2e8f0;
-      transform: translateY(-2px);
-    }
-
-    .btn-danger {
-      background: #ef4444;
-      color: white;
-    }
-
-    .btn-danger:hover {
-      background: #dc2626;
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
-    }
-
-    .instructions {
-      background: #fffbeb;
-      border: 2px solid #fed7aa;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-    }
-
-    .instructions h3 {
-      color: #92400e;
-      margin-bottom: 12px;
-    }
-
-    .instructions ol {
-      color: #92400e;
-      padding-left: 20px;
-    }
-
-    .instructions li {
-      margin-bottom: 8px;
-      line-height: 1.5;
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      margin: 30px 0;
-    }
-
-    .feature-card {
-      background: #f8fafc;
-      border: 2px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
-    }
-
-    .feature-icon {
-      font-size: 2rem;
-      margin-bottom: 12px;
-    }
-
-    .feature-card h4 {
-      color: #1f2937;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
-    .feature-card p {
-      color: #6b7280;
-      font-size: 14px;
-    }
-
-    .violation-log {
-      background: #1f2937;
-      color: #f9fafb;
-      border-radius: 8px;
-      padding: 20px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      max-height: 200px;
-      overflow-y: auto;
-      margin: 20px 0;
-    }
-
-    .code {
-      background: #f1f5f9;
-      border: 1px solid #e2e8f0;
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-family: 'Courier New', monospace;
-      font-size: 13px;
-      color: #1f2937;
-    }
-
-    @media (max-width: 768px) {
-      .header h1 {
-        font-size: 2rem;
-      }
-      
-      .content {
-        padding: 20px;
-      }
-      
-      .test-buttons {
-        flex-direction: column;
-      }
-      
-      .btn {
-        text-align: center;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamLock Demo - Test Page</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .demo-section h2 {
+            color: #374151;
+            margin-top: 0;
+        }
+        
+        .test-button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 10px 10px 0;
+            transition: all 0.2s;
+        }
+        
+        .test-button:hover {
+            background: #b91c1c;
+            transform: translateY(-1px);
+        }
+        
+        .info-box {
+            background: #fffbeb;
+            border: 2px solid #fed7aa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .info-box h3 {
+            color: #92400e;
+            margin-top: 0;
+        }
+        
+        .info-box p {
+            color: #92400e;
+            margin-bottom: 0;
+        }
+        
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+        
+        .submit-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .status-display {
+            background: #f3f4f6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
     <div class="header">
-      <h1>🔒 Exam Lock Demo</h1>
-      <p>Chrome Extension for Academic Integrity</p>
+        <h1>🔒 ExamLock Demo</h1>
+        <p>Test the enhanced exam security features</p>
     </div>
 
-    <div class="content">
-      <div class="demo-section">
-        <h2>🎯 Live Demo</h2>
-        <p>This page demonstrates the Exam Lock Chrome Extension functionality. The extension is actively monitoring for tab switches and other violations.</p>
+    <div class="demo-section">
+        <h2>🚨 Test Violation Detection</h2>
+        <p>Click the buttons below to simulate different types of violations and test the new delay penalty feature:</p>
         
-        <div class="status-card status-active" id="statusCard">
-          <strong>Status:</strong> <span id="statusText">Monitoring Active</span><br>
-          <strong>Violations:</strong> <span id="violationCount">0</span><br>
-          <strong>Last Check:</strong> <span id="lastCheck">-</span>
+        <button class="test-button" onclick="simulateTabSwitch()">
+            Simulate Tab Switch
+        </button>
+        
+        <button class="test-button" onclick="simulateKeyboardShortcut()">
+            Simulate Keyboard Shortcut
+        </button>
+        
+        <button class="test-button" onclick="testRefreshProtection()">
+            Test Refresh Protection
+        </button>
+        
+        <div class="info-box">
+            <h3>⏱️ New Delay Penalty Feature</h3>
+            <p>When a violation is detected, students will see a countdown timer overlay that prevents them from continuing the exam for a specified duration (configurable by admin). This provides a graduated penalty system before applying the final blocking overlay or auto-submission.</p>
         </div>
-
-        <div class="test-buttons">
-          <button class="btn btn-danger" onclick="triggerViolation()">🚨 Trigger Violation</button>
-          <button class="btn btn-secondary" onclick="clearViolations()">🧹 Clear Violations</button>
-          <button class="btn btn-primary" onclick="toggleMode()">🔄 Toggle Mode</button>
-        </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>📋 How to Test</h2>
-        <div class="instructions">
-          <h3>Installation Steps:</h3>
-          <ol>
-            <li>Download all extension files to a folder</li>
-            <li>Open Chrome and go to <code class="code">chrome://extensions/</code></li>
-            <li>Enable "Developer mode" in the top right</li>
-            <li>Click "Load unpacked" and select the extension folder</li>
-            <li>The extension icon should appear in your toolbar</li>
-          </ol>
-        </div>
-
-        <div class="instructions">
-          <h3>Testing Violations:</h3>
-          <ol>
-            <li>With this page open, try switching to another tab</li>
-            <li>Try minimizing the browser window</li>
-            <li>Press Alt+Tab or Ctrl+Tab</li>
-            <li>Press F11 to toggle fullscreen</li>
-            <li>Try opening developer tools (F12)</li>
-          </ol>
-        </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>⚡ Features</h2>
-        <div class="feature-grid">
-          <div class="feature-card">
-            <div class="feature-icon">👀</div>
-            <h4>Tab Switch Detection</h4>
-            <p>Monitors page visibility changes using the Page Visibility API</p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">⌨️</div>
-            <h4>Shortcut Prevention</h4>
-            <p>Blocks common cheating shortcuts like Alt+Tab, F12, etc.</p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">🔒</div>
-            <h4>Dual Response Modes</h4>
-            <p>Either blocks with overlay or auto-submits the form</p>
-          </div>
-          
-          <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h4>Violation Logging</h4>
-            <p>Records all violations with timestamps for review</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>📝 Violation Log</h2>
-        <div class="violation-log" id="violationLog">
-          Ready to monitor violations...
-        </div>
-      </div>
-
-      <div class="demo-section">
-        <h2>🎓 Educational Use</h2>
-        <p>This extension is designed for educational institutions to maintain academic integrity during online examinations. It works seamlessly with:</p>
-        <ul style="margin: 15px 0; padding-left: 20px; color: #6b7280;">
-          <li>Google Forms</li>
-          <li>Custom exam platforms</li>
-          <li>Any web-based assessment tool</li>
-        </ul>
-      </div>
     </div>
-  </div>
 
-  <script>
-    let violations = 0;
-    let mode = 'overlay';
-    
-    // Simulate the exam lock functionality for demo
-    function updateStatus() {
-      document.getElementById('violationCount').textContent = violations;
-      document.getElementById('lastCheck').textContent = new Date().toLocaleTimeString();
-    }
+    <div class="form-section">
+        <h2>📝 Sample Exam Form</h2>
+        <p>This simulates an exam form. Try switching tabs while filling it out to test the protection:</p>
+        
+        <form id="examForm" onsubmit="handleSubmit(event)">
+            <div class="form-group">
+                <label for="studentName">Student Name:</label>
+                <input type="text" id="studentName" name="studentName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="studentId">Student ID:</label>
+                <input type="text" id="studentId" name="studentId" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="question1">Question 1: What is the capital of France?</label>
+                <select id="question1" name="question1" required>
+                    <option value="">Select an answer</option>
+                    <option value="paris">Paris</option>
+                    <option value="london">London</option>
+                    <option value="berlin">Berlin</option>
+                    <option value="madrid">Madrid</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="question2">Question 2: Explain the concept of academic integrity (minimum 100 words):</label>
+                <textarea id="question2" name="question2" placeholder="Type your answer here..." required></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="question3">Question 3: What is 2 + 2?</label>
+                <input type="number" id="question3" name="question3" required>
+            </div>
+            
+            <button type="submit" class="submit-btn">Submit Exam</button>
+        </form>
+        
+        <div class="status-display" id="statusDisplay">
+            Status: Ready for testing
+        </div>
+    </div>
 
-    function triggerViolation() {
-      violations++;
-      const timestamp = new Date().toLocaleTimeString();
-      
-      // Add to violation log
-      const log = document.getElementById('violationLog');
-      log.innerHTML += `\n[${timestamp}] VIOLATION DETECTED - Tab switch simulation (Total: ${violations})`;
-      log.scrollTop = log.scrollHeight;
-      
-      updateStatus();
-      
-      // Show demo alert
-      alert(`🚨 Violation Detected!\n\nMode: ${mode}\nCount: ${violations}\nTime: ${timestamp}\n\nIn real usage, this would ${mode === 'overlay' ? 'show blocking overlay' : 'auto-submit the form'}.`);
-    }
-
-    function clearViolations() {
-      violations = 0;
-      document.getElementById('violationLog').innerHTML = 'Violations cleared...';
-      updateStatus();
-      alert('✅ Violations cleared successfully!');
-    }
-
-    function toggleMode() {
-      mode = mode === 'overlay' ? 'submit' : 'overlay';
-      alert(`🔄 Mode changed to: ${mode === 'overlay' ? 'Blocking Overlay' : 'Auto-Submit'}`);
-    }
-
-    // Update status every second
-    setInterval(updateStatus, 1000);
-    
-    // Initial status update
-    updateStatus();
-
-    // Add some real violation detection for demo
-    let hidden = false;
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && !hidden) {
-        hidden = true;
-        setTimeout(() => {
-          if (document.hidden) {
-            triggerViolation();
-          }
-          hidden = false;
-        }, 100);
-      }
-    });
-
-    // Prevent some shortcuts for demo
-    document.addEventListener('keydown', (e) => {
-      if (
-        (e.altKey && e.key === 'Tab') ||
-        (e.ctrlKey && e.key === 'Tab') ||
-        e.key === 'F11' ||
-        e.key === 'F12'
-      ) {
-        e.preventDefault();
-        triggerViolation();
-      }
-    });
-
-    console.log('🔒 Exam Lock Demo loaded - Try switching tabs or pressing prohibited keys!');
-  </script>
+    <script>
+        // Test functions
+        function simulateTabSwitch() {
+            updateStatus('Simulating tab switch violation...');
+            // Trigger visibility change event
+            document.dispatchEvent(new Event('visibilitychange'));
+            Object.defineProperty(document, 'hidden', { value: true, configurable: true });
+            setTimeout(() => {
+                Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+                updateStatus('Tab switch simulation completed');
+            }, 1000);
+        }
+        
+        function simulateKeyboardShortcut() {
+            updateStatus('Simulating keyboard shortcut violation...');
+            // Simulate Alt+Tab
+            const event = new KeyboardEvent('keydown', {
+                key: 'Tab',
+                altKey: true,
+                bubbles: true
+            });
+            document.dispatchEvent(event);
+            updateStatus('Keyboard shortcut simulation completed');
+        }
+        
+        function testRefreshProtection() {
+            updateStatus('Testing refresh protection...');
+            // This would normally trigger a page refresh, but we'll just show the message
+            alert('Refresh protection is active! In a real scenario, violations would persist through page refreshes.');
+            updateStatus('Refresh protection test completed');
+        }
+        
+        function handleSubmit(event) {
+            event.preventDefault();
+            updateStatus('Form submission attempted - ExamLock will intercept if violations exist');
+            
+            // Simulate form data collection
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+            console.log('Form data:', data);
+            
+            setTimeout(() => {
+                updateStatus('Form submitted successfully (simulation)');
+            }, 1000);
+        }
+        
+        function updateStatus(message) {
+            const statusDisplay = document.getElementById('statusDisplay');
+            const timestamp = new Date().toLocaleTimeString();
+            statusDisplay.textContent = `[${timestamp}] ${message}`;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStatus('ExamLock demo page loaded - Extension should be active');
+        });
+        
+        // Add some visual feedback for testing
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                updateStatus('Page visibility changed - VIOLATION DETECTED!');
+            } else {
+                updateStatus('Page became visible again');
+            }
+        });
+        
+        window.addEventListener('blur', () => {
+            updateStatus('Window lost focus - VIOLATION DETECTED!');
+        });
+        
+        window.addEventListener('focus', () => {
+            updateStatus('Window gained focus');
+        });
+    </script>
 </body>
 </html>

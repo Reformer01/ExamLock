@@ -1,197 +1,211 @@
-# Exam Lock Chrome Extension
+# ExamLock: Enhanced Academic Integrity Protection
 
-A Chrome Extension designed to maintain academic integrity during online examinations by detecting and preventing tab switching, minimizing, and other potential cheating behaviors.
+A Chrome extension that detects tab switching and other cheating behaviors during online exams, with enhanced penalty features and refresh protection.
 
-## Features
+## 🆕 New Features
 
-- **Page Visibility Detection**: Uses the Page Visibility API to detect tab switches and window minimization
-- **Keyboard Shortcut Prevention**: Blocks common cheating shortcuts (Alt+Tab, F12, Ctrl+U, etc.)
-- **Dual Response Modes**: 
-  - **Overlay Mode**: Shows a blocking overlay that prevents further interaction
-  - **Auto-Submit Mode**: Automatically submits the form when violations are detected
-- **Violation Logging**: Records all violations with timestamps for review
-- **Session Persistence**: Maintains violation state across page refreshes
-- **Google Forms Integration**: Specifically designed to work with Google Forms and other exam platforms
+### Delayed Timer Penalty
+- **Graduated Penalty System**: When students switch tabs, they now see a countdown timer overlay that prevents them from continuing the exam for a specified duration
+- **Configurable Duration**: Admins can set the delay penalty duration (5-300 seconds) through the extension settings
+- **Visual Countdown**: Students see a prominent timer showing exactly how long they must wait
+- **Progressive Enforcement**: Provides a warning penalty before applying the final blocking overlay or auto-submission
 
-## Installation
+### Enhanced Refresh Protection
+- **Persistent Violations**: Blocking overlays now persist through page refreshes - students cannot bypass penalties by refreshing the page
+- **State Recovery**: The extension remembers violation states and active penalties across page reloads
+- **Tamper Resistance**: Uses both sessionStorage and localStorage to maintain violation tracking
 
-### For Development/Testing
+## 🔧 Features
+
+### Core Protection
+- **Tab Switch Detection**: Monitors when students switch away from the exam tab
+- **Keyboard Shortcut Prevention**: Blocks common cheating shortcuts (Alt+Tab, Ctrl+Tab, F11, F12, etc.)
+- **Focus Loss Detection**: Detects when the exam window loses focus
+- **Form Submission Protection**: Prevents form submission when violations are detected
+
+### Response Modes
+1. **Blocking Overlay Mode**: Shows a permanent blocking screen after violations
+2. **Auto-Submit Mode**: Automatically submits the exam form after violations
+3. **Delay Penalty Mode**: Shows countdown timer before applying main penalty (NEW)
+
+### Admin Controls
+- **Enable/Disable Protection**: Toggle the entire protection system
+- **Response Mode Selection**: Choose between overlay, auto-submit, or delay penalty
+- **Max Violations Setting**: Configure how many violations trigger the penalty
+- **Delay Penalty Duration**: Set countdown timer duration (5-300 seconds)
+- **Violation Clearing**: Admin can clear violations for legitimate cases
+
+## 🎯 Supported Platforms
+
+- Google Forms (`docs.google.com/forms`)
+- Google Forms short links (`forms.gle`)
+- Local development servers (`localhost`, `127.0.0.1`)
+- Local HTML files (`file://`)
+
+## 📦 Installation
 
 1. Download or clone this repository
 2. Open Chrome and navigate to `chrome://extensions/`
-3. Enable "Developer mode" in the top right corner
+3. Enable "Developer mode" in the top right
 4. Click "Load unpacked" and select the extension directory
-5. The extension should now appear in your Chrome toolbar
+5. The ExamLock icon should appear in your extensions toolbar
 
-### For Production Deployment
+## ⚙️ Configuration
 
-1. Package the extension files into a ZIP archive
-2. Upload to the Chrome Web Store Developer Dashboard
-3. Follow Chrome Web Store review process
-4. Deploy to users via Chrome Web Store or Enterprise policies
+Click the ExamLock extension icon to access settings:
 
-## File Structure
+### Basic Settings
+- **Enable Protection**: Turn the extension on/off
+- **Response Mode**: Choose how violations are handled
+- **Max Violations**: Set violation threshold (1-10)
 
+### Delay Penalty Settings (NEW)
+- **Enable Delay Penalty**: Toggle the countdown timer feature
+- **Delay Duration**: Set how long students must wait (5-300 seconds)
+
+### Admin Actions
+- **Save Settings**: Apply configuration changes
+- **Clear Violations**: Reset violation state for current tab
+
+## 🧪 Testing
+
+Use the included `demo.html` file to test the extension:
+
+1. Open `demo.html` in Chrome
+2. Ensure the extension is enabled
+3. Try the test buttons to simulate violations:
+   - **Simulate Tab Switch**: Triggers visibility change detection
+   - **Simulate Keyboard Shortcut**: Tests shortcut prevention
+   - **Test Refresh Protection**: Demonstrates persistence across refreshes
+
+## 🔒 How It Works
+
+### Violation Detection
+1. **Visibility API**: Monitors `document.visibilitychange` events
+2. **Focus Events**: Listens for window `blur` events
+3. **Keyboard Events**: Intercepts prohibited key combinations
+4. **Real-time Monitoring**: Continuous background monitoring during exam sessions
+
+### Penalty Application
+1. **First Violation**: Shows delay penalty overlay with countdown timer
+2. **Countdown Period**: Students cannot interact with exam during timer
+3. **Timer Completion**: 
+   - If under max violations: Timer disappears, exam continues
+   - If at max violations: Applies final penalty (blocking overlay or auto-submit)
+4. **Refresh Protection**: All states persist through page refreshes
+
+### Data Storage
+- **Session Storage**: Temporary violation data for current session
+- **Local Storage**: Persistent data for refresh protection
+- **Chrome Storage**: Extension settings and configuration
+
+## 🛡️ Security Features
+
+### Tamper Resistance
+- **High Z-Index Overlays**: Overlays appear above all page content
+- **Pointer Events Blocking**: Prevents interaction with underlying content
+- **User Selection Disabled**: Prevents text selection on overlays
+- **Refresh Persistence**: Violations survive page reloads
+
+### Privacy Protection
+- **Local Data Only**: All violation data stored locally
+- **No External Transmission**: No data sent to external servers
+- **Session-Based Tracking**: Violation data cleared when browser closes
+
+## 📊 Violation Logging
+
+The extension logs detailed violation information:
+
+```javascript
+{
+  timestamp: 1640995200000,
+  url: "https://docs.google.com/forms/d/abc123/viewform",
+  userAgent: "Mozilla/5.0...",
+  violations: 2,
+  sessionDuration: 300000
+}
 ```
-exam-lock-extension/
+
+## 🎨 UI Components
+
+### Delay Penalty Overlay
+- **Orange Theme**: Distinguishes from blocking overlay
+- **Large Timer Display**: Prominent countdown in MM:SS format
+- **Violation Information**: Shows current violation count and timestamp
+- **Warning Message**: Explains the penalty and consequences
+
+### Blocking Overlay
+- **Red Theme**: Indicates final penalty state
+- **Lock Icon**: Visual indicator of locked state
+- **Session ID**: Unique identifier for support purposes
+- **Contact Information**: Instructions for students
+
+## 🔧 Development
+
+### File Structure
+```
+ExamLock/
 ├── manifest.json          # Extension configuration
-├── content.js            # Main content script
-├── overlay.css           # Styles for blocking overlay
-├── popup.html           # Extension popup interface
-├── popup.css            # Popup styles
-├── popup.js             # Popup functionality
-├── demo.html            # Demo page for testing
-└── README.md            # This file
+├── content.js            # Main content script with violation detection
+├── overlay.css           # Overlay styling (blocking + delay penalty)
+├── popup.html            # Settings interface
+├── popup.js              # Settings logic
+├── popup.css             # Settings styling
+├── demo.html             # Testing page
+└── icons/                # Extension icons
 ```
 
-## Configuration
+### Key Classes
+- **ExamLock**: Main content script class
+- **ExamLockPopup**: Settings interface class
 
-### Manifest Configuration
+### Extension APIs Used
+- **Chrome Storage API**: Settings persistence
+- **Chrome Scripting API**: Violation clearing
+- **Chrome Tabs API**: Active tab detection
 
-The extension can be configured to work with different URL patterns by modifying the `content_scripts.matches` array in `manifest.json`:
-
-```json
-"matches": [
-  "https://docs.google.com/forms/d/*/viewform*",
-  "https://forms.gle/*",
-  "*://localhost:*/*",
-  "*://127.0.0.1:*/*"
-]
-```
-
-### Settings
-
-Users can configure the extension through the popup interface:
-
-- **Enable/Disable Protection**: Toggle the monitoring on/off
-- **Response Mode**: Choose between overlay blocking or auto-submission
-- **Max Violations**: Set the threshold for violation tracking
-
-## How It Works
-
-### Detection Methods
-
-1. **Page Visibility API**: Monitors `document.visibilitychange` events
-2. **Window Focus Events**: Listens for `window.blur` events
-3. **Keyboard Shortcuts**: Intercepts and blocks prohibited key combinations
-4. **Form Protection**: Prevents form submission when violations are detected
-
-### Response Actions
-
-#### Overlay Mode
-- Creates a full-screen blocking overlay
-- Displays violation information and warning messages
-- Prevents further interaction with the exam
-- Persists across page refreshes
-
-#### Auto-Submit Mode
-- Automatically submits the form when violations are detected
-- Shows a countdown warning before submission
-- Works with Google Forms and custom form elements
-
-### Violation Logging
-
-All violations are logged with:
-- Timestamp
-- URL of the exam page
-- User agent information
-- Total violation count
-- Session duration
-
-## Testing
-
-Use the included `demo.html` file to test the extension functionality:
-
-1. Load the extension in Chrome
-2. Open `demo.html` in your browser
-3. Try switching tabs, minimizing windows, or pressing blocked shortcuts
-4. Observe the violation detection and logging
-
-## Browser Compatibility
-
-- **Chrome**: Full support (Manifest V3)
-- **Edge**: Compatible with Chromium-based versions
-- **Firefox**: Would require adaptation to Manifest V2
-- **Safari**: Not supported
-
-## Security Considerations
-
-### What This Extension Can Do
-
-- Detect tab switches and window minimization
-- Block keyboard shortcuts within the page context
-- Log user behavior for academic integrity monitoring
-- Prevent form submission in violation scenarios
-
-### What This Extension Cannot Do
-
-- Prevent users from using other devices
-- Block system-level shortcuts (Windows key, etc.)
-- Prevent physical screen sharing or photography
-- Monitor activity outside the browser
-- Access content from other tabs or windows
-
-## Privacy
-
-The extension:
-- Only activates on specified exam URLs
-- Stores violation logs locally in the browser
-- Does not transmit data to external servers
-- Respects user privacy outside of exam contexts
-
-## Troubleshooting
+## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Extension not working on exam page**
-   - Check that the URL pattern matches in `manifest.json`
-   - Ensure the extension is enabled and has necessary permissions
+**Extension not working on local files:**
+- Ensure "Allow access to file URLs" is enabled in extension settings
 
-2. **Violations not being detected**
-   - Verify that JavaScript is enabled
-   - Check browser console for error messages
-   - Ensure the page has loaded completely
+**Settings not saving:**
+- Check Chrome storage permissions
+- Verify extension has proper permissions
 
-3. **Overlay not appearing**
-   - Check for CSS conflicts with the exam platform
-   - Verify that the overlay CSS is loading correctly
+**Overlays not appearing:**
+- Check browser console for JavaScript errors
+- Verify content script injection
+
+**Violations not persisting through refresh:**
+- Check localStorage permissions
+- Verify beforeunload event handling
 
 ### Debug Mode
+Enable Chrome DevTools console to see violation logs:
+```
+🔒 Exam Lock initialized
+⚠️ Exam violation detected! Count: 1 at 10:30:45 AM
+```
 
-To enable debug logging, open the browser console and look for messages prefixed with `🔒 Exam Lock`.
+## 📝 License
 
-## Development
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### Setup
-
-1. Clone the repository
-2. Make your changes to the source files
-3. Test using the demo page
-4. Load the unpacked extension in Chrome for testing
-
-### Building for Production
-
-1. Update version number in `manifest.json`
-2. Test thoroughly with real exam platforms
-3. Package files into ZIP archive for distribution
-4. Submit to Chrome Web Store if needed
-
-## License
-
-This project is provided for educational purposes. Please ensure compliance with your institution's policies and local regulations when deploying.
-
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Test thoroughly with demo.html
 5. Submit a pull request
 
-## Support
+## 📞 Support
 
-For issues and questions:
-- Check the troubleshooting section above
-- Review browser console for error messages
-- Test with the included demo page
-- Ensure all files are properly loaded
+For technical support or feature requests, please create an issue in the repository.
+
+---
+
+**⚠️ Important**: This extension is designed for educational integrity purposes. Ensure compliance with your institution's policies and local regulations when deploying in academic environments.

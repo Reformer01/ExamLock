@@ -4,7 +4,9 @@ class ExamLockPopup {
     this.settings = {
       enabled: true,
       mode: 'overlay',
-      maxViolations: 3
+      maxViolations: 3,
+      delayPenalty: 30,
+      delayPenaltyEnabled: true
     };
     
     this.init();
@@ -56,6 +58,19 @@ class ExamLockPopup {
       this.settings.maxViolations = parseInt(e.target.value);
     });
 
+    // Delay penalty toggle
+    const delayPenaltyToggle = document.getElementById('delayPenaltyToggle');
+    delayPenaltyToggle.addEventListener('change', (e) => {
+      this.settings.delayPenaltyEnabled = e.target.checked;
+      this.updateDelayPenaltyVisibility();
+    });
+
+    // Delay penalty duration
+    const delayPenalty = document.getElementById('delayPenalty');
+    delayPenalty.addEventListener('change', (e) => {
+      this.settings.delayPenalty = parseInt(e.target.value);
+    });
+
     // Save button
     const saveBtn = document.getElementById('saveBtn');
     saveBtn.addEventListener('click', () => {
@@ -73,6 +88,23 @@ class ExamLockPopup {
     document.getElementById('enabledToggle').checked = this.settings.enabled;
     document.getElementById('modeSelect').value = this.settings.mode;
     document.getElementById('maxViolations').value = this.settings.maxViolations;
+    document.getElementById('delayPenaltyToggle').checked = this.settings.delayPenaltyEnabled;
+    document.getElementById('delayPenalty').value = this.settings.delayPenalty;
+    
+    this.updateDelayPenaltyVisibility();
+  }
+
+  updateDelayPenaltyVisibility() {
+    const delayPenaltySettings = document.getElementById('delayPenaltySettings');
+    const delayPenaltyEnabled = document.getElementById('delayPenaltyToggle').checked;
+    
+    if (delayPenaltyEnabled) {
+      delayPenaltySettings.style.display = 'block';
+      delayPenaltySettings.style.opacity = '1';
+    } else {
+      delayPenaltySettings.style.opacity = '0.5';
+      delayPenaltySettings.style.pointerEvents = 'none';
+    }
   }
 
   async clearViolations() {
@@ -83,15 +115,33 @@ class ExamLockPopup {
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => {
+          // Clear session storage
           sessionStorage.removeItem('examLockViolated');
           sessionStorage.removeItem('examLockViolations');
           sessionStorage.removeItem('examLockTimestamp');
-          localStorage.removeItem('examViolations');
+          sessionStorage.removeItem('examLockDelayEndTime');
           
-          // Remove overlay if present
+          // Clear local storage
+          localStorage.removeItem('examViolations');
+          localStorage.removeItem('examLockRefreshAttempt');
+          localStorage.removeItem('examLockViolations');
+          localStorage.removeItem('examLockTimestamp');
+          localStorage.removeItem('examLockDelayEndTime');
+          
+          // Remove overlays if present
           const overlay = document.querySelector('.exam-lock-overlay');
           if (overlay) {
             overlay.remove();
+          }
+          
+          const delayOverlay = document.querySelector('.exam-lock-delay-overlay');
+          if (delayOverlay) {
+            delayOverlay.remove();
+          }
+          
+          const warning = document.querySelector('.exam-lock-warning');
+          if (warning) {
+            warning.remove();
           }
         }
       });

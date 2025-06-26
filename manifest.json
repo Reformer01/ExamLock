@@ -14,7 +14,8 @@
         "https://docs.google.com/forms/d/*/viewform*",
         "https://forms.gle/*",
         "*://localhost:*/*",
-        "*://127.0.0.1:*/*"
+        "*://127.0.0.1:*/*",
+        "file:///*"
       ],
       "js": ["content.js"],
       "css": ["overlay.css"],

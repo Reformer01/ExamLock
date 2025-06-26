@@ -9,7 +9,9 @@ class ExamLock {
     this.settings = {
       mode: 'overlay', // 'overlay' or 'submit'
       maxViolations: 3,
-      enabled: true
+      enabled: true,
+      delayPenalty: 30, // Default delay penalty in seconds
+      delayPenaltyEnabled: true // Whether the delay penalty is enabled
     };
     
     this.init();
@@ -28,8 +30,12 @@ class ExamLock {
     // Set up form submission detection
     this.setupFormProtection();
     
-    // Create overlay element
+    // Create overlay elements
     this.createOverlay();
+    this.createDelayPenaltyOverlay();
+    
+    // Set up beforeunload event to prevent refresh bypass
+    this.setupRefreshProtection();
     
     console.log('🔒 Exam Lock initialized');
   }
@@ -50,7 +56,12 @@ class ExamLock {
     if (stored === 'true') {
       this.isLocked = true;
       this.violations = parseInt(sessionStorage.getItem('examLockViolations') || '0');
-      if (this.settings.mode === 'overlay') {
+      
+      // Check if there's an active delay penalty
+      const delayEndTime = parseInt(sessionStorage.getItem('examLockDelayEndTime') || '0');
+      if (delayEndTime > Date.now()) {
+        this.showDelayPenaltyOverlay(delayEndTime);
+      } else if (this.settings.mode === 'overlay') {
         this.showBlockingOverlay();
       }
     }
@@ -98,6 +109,43 @@ class ExamLock {
     });
   }
 
+  setupRefreshProtection() {
+    // Store violation state in localStorage to persist through refreshes
+    window.addEventListener('beforeunload', () => {
+      if (this.isLocked) {
+        localStorage.setItem('examLockRefreshAttempt', 'true');
+        localStorage.setItem('examLockViolations', this.violations.toString());
+        localStorage.setItem('examLockTimestamp', sessionStorage.getItem('examLockTimestamp') || '');
+        
+        // If there's an active delay penalty, store it in localStorage
+        const delayEndTime = sessionStorage.getItem('examLockDelayEndTime');
+        if (delayEndTime) {
+          localStorage.setItem('examLockDelayEndTime', delayEndTime);
+        }
+      }
+    });
+    
+    // Check for refresh attempt on page load
+    if (localStorage.getItem('examLockRefreshAttempt') === 'true') {
+      this.isLocked = true;
+      this.violations = parseInt(localStorage.getItem('examLockViolations') || '0');
+      
+      // Restore session storage
+      sessionStorage.setItem('examLockViolated', 'true');
+      sessionStorage.setItem('examLockViolations', this.violations.toString());
+      sessionStorage.setItem('examLockTimestamp', localStorage.getItem('examLockTimestamp') || '');
+      
+      // Check if there was an active delay penalty
+      const delayEndTime = parseInt(localStorage.getItem('examLockDelayEndTime') || '0');
+      if (delayEndTime > Date.now()) {
+        sessionStorage.setItem('examLockDelayEndTime', delayEndTime.toString());
+        // We'll show the delay overlay in checkPreviousViolations()
+      } else if (this.settings.mode === 'overlay') {
+        // We'll show the blocking overlay in checkPreviousViolations()
+      }
+    }
+  }
+
   handleVisibilityViolation() {
     if (!this.settings.enabled || this.isLocked) return;
 
@@ -111,15 +159,111 @@ class ExamLock {
     sessionStorage.setItem('examLockViolations', this.violations.toString());
     sessionStorage.setItem('examLockTimestamp', timestamp);
 
-    if (this.settings.mode === 'submit') {
-      this.autoSubmitForm();
+    // Apply penalty based on settings - ensure only one overlay shows
+    if (this.settings.delayPenaltyEnabled) {
+      // Hide blocking overlay if showing
+      if (this.overlay && this.overlay.style.display === 'flex') {
+        this.overlay.style.display = 'none';
+      }
+      // Show delay penalty
+      this.applyDelayPenalty();
     } else {
-      this.isLocked = true;
-      this.showBlockingOverlay();
+      // Hide delay overlay if showing
+      if (this.delayOverlay && this.delayOverlay.style.display === 'flex') {
+        this.delayOverlay.style.display = 'none';
+        if (this.countdownInterval) {
+          clearInterval(this.countdownInterval);
+        }
+      }
+      
+      if (this.settings.mode === 'submit') {
+        // Auto-submit mode
+        this.autoSubmitForm();
+      } else {
+        // Blocking overlay mode
+        this.isLocked = true;
+        this.showBlockingOverlay();
+      }
     }
 
     // Log violation for monitoring
     this.logViolation();
+  }
+
+  applyDelayPenalty() {
+    const delaySeconds = this.settings.delayPenalty;
+    const endTime = Date.now() + (delaySeconds * 1000);
+    
+    // Store the end time in session storage
+    sessionStorage.setItem('examLockDelayEndTime', endTime.toString());
+    
+    // Show the delay penalty overlay
+    this.showDelayPenaltyOverlay(endTime);
+  }
+
+  showDelayPenaltyOverlay(endTime) {
+    if (!this.delayOverlay.parentNode) {
+      document.body.appendChild(this.delayOverlay);
+    }
+    this.delayOverlay.style.display = 'flex';
+    
+    // Update violation count
+    const countEl = this.delayOverlay.querySelector('.violation-count');
+    if (countEl) countEl.textContent = this.violations;
+    
+    // Update timestamp
+    const timeEl = this.delayOverlay.querySelector('.violation-time');
+    if (timeEl) timeEl.textContent = sessionStorage.getItem('examLockTimestamp') || 'N/A';
+    
+    // Start the countdown
+    this.startDelayCountdown(endTime);
+  }
+
+  startDelayCountdown(endTime) {
+    const countdownEl = this.delayOverlay.querySelector('.countdown-timer');
+    if (!countdownEl) return;
+    
+    // Clear any existing interval
+    if (this.countdownInterval) {
+      clearInterval(this.countdownInterval);
+    }
+    
+    const updateCountdown = () => {
+      const now = Date.now();
+      const timeLeft = Math.max(0, endTime - now);
+      
+      if (timeLeft <= 0) {
+        clearInterval(this.countdownInterval);
+        
+        // Remove the delay overlay
+        this.delayOverlay.style.display = 'none';
+        
+        // Clear the delay end time
+        sessionStorage.removeItem('examLockDelayEndTime');
+        localStorage.removeItem('examLockDelayEndTime');
+        
+        // If this is the final violation, show the blocking overlay
+        if (this.violations >= this.settings.maxViolations && this.settings.mode === 'overlay') {
+          this.isLocked = true;
+          this.showBlockingOverlay();
+        } else if (this.violations >= this.settings.maxViolations && this.settings.mode === 'submit') {
+          this.autoSubmitForm();
+        }
+        
+        return;
+      }
+      
+      // Format the time left
+      const seconds = Math.floor(timeLeft / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const remainingSeconds = seconds % 60;
+      
+      countdownEl.textContent = `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+    
+    // Update immediately and then every second
+    updateCountdown();
+    this.countdownInterval = setInterval(updateCountdown, 1000);
   }
 
   autoSubmitForm() {
@@ -189,6 +333,31 @@ class ExamLock {
         </div>
         <div class="contact-info">
           <p>Session ID: <code>${this.generateSessionId()}</code></p>
+        </div>
+      </div>
+    `;
+  }
+
+  createDelayPenaltyOverlay() {
+    this.delayOverlay = document.createElement('div');
+    this.delayOverlay.className = 'exam-lock-delay-overlay';
+    this.delayOverlay.innerHTML = `
+      <div class="overlay-content">
+        <div class="timer-icon">⏱️</div>
+        <h1>Exam Paused</h1>
+        <div class="violation-info">
+          <p><strong>Tab switching detected!</strong></p>
+          <p>Violations: <span class="violation-count">${this.violations}</span></p>
+          <p>Time: <span class="violation-time">${sessionStorage.getItem('examLockTimestamp') || 'N/A'}</span></p>
+        </div>
+        <div class="timer-message">
+          <p>⚠️ <strong>Academic Integrity Violation</strong></p>
+          <p>As a penalty, your exam has been paused.</p>
+          <p>You may continue in:</p>
+          <div class="countdown-timer">0:00</div>
+        </div>
+        <div class="warning-note">
+          <p>Additional violations may result in your exam being locked or automatically submitted.</p>
         </div>
       </div>
     `;
