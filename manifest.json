@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "Exam Lock: Prevent Tab Minimize",
+  "description": "Detects if the student minimizes or switches away from the exam tab and triggers an action (e.g. auto-submit).",
+  "version": "1.0.0",
+  "icons": {
+    "16": "icon-16.png",
+    "48": "icon-48.png",
+    "128": "icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://docs.google.com/forms/d/*/viewform*",
+        "https://forms.gle/*",
+        "*://localhost:*/*",
+        "*://127.0.0.1:*/*",
+        "file:///*"
+      ],
+      "js": ["content.js"],
+      "css": ["overlay.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Exam Lock Settings"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://docs.google.com/*",
+    "https://forms.gle/*"
+  ]
+}
